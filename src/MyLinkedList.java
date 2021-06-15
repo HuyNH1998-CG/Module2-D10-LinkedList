@@ -4,7 +4,7 @@ public class MyLinkedList<E> implements Cloneable {
     Node tail = null;
     int numNodes;
 
-    private class Node {
+    private static class Node {
         Node next;
         Object data;
 
@@ -49,7 +49,6 @@ public class MyLinkedList<E> implements Cloneable {
 
     public void addLast(E e) {
         Node newNode = new Node(e);
-        Node last = tail;
         if (tail == null) {
             tail = newNode;
         } else {
@@ -109,7 +108,7 @@ public class MyLinkedList<E> implements Cloneable {
         }
     }
 
-    public boolean remove(Object e) {
+    public boolean remove(Node e) {
         if (e == null) {
             for (Node x = head; x != null; x = x.next) {
                 if (x.data == null) {
