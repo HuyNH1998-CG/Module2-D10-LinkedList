@@ -1,18 +1,18 @@
 
-public class MyLinkedList<E> implements Cloneable {
-    Node head = null;
-    Node tail = null;
+public class MyLinkedList<E extends Comparable<E>> implements Cloneable {
+    Node<E> head = null;
+    Node<E> tail = null;
     int numNodes;
 
-    private static class Node {
-        Node next;
-        Object data;
+    private static class Node<E> {
+        Node<E> next;
+        E data;
 
-        public Node(Object data) {
+        public Node(E data) {
             this.data = data;
         }
 
-        public Object getData() {
+        public E getData() {
             return this.data;
         }
     }
@@ -25,20 +25,20 @@ public class MyLinkedList<E> implements Cloneable {
         if (index == 0) addFirst(element);
         else if (index > numNodes) addLast(element);
         else {
-            Node temp = head;
+            Node<E> temp = head;
             for (int i = 0; i < index - 1 && temp.next != null; i++) {
                 temp = temp.next;
             }
-            Node holder;
+            Node<E> holder;
             holder = temp.next;
-            temp.next = new Node(element);
+            temp.next = new Node<>(element);
             temp.next.next = holder;
             numNodes++;
         }
     }
 
     public void addFirst(E e) {
-        Node newNode = new Node(e);
+        Node<E> newNode = new Node<>(e);
         newNode.next = head;
         head = newNode;
         if (tail == null) {
@@ -48,7 +48,7 @@ public class MyLinkedList<E> implements Cloneable {
     }
 
     public void addLast(E e) {
-        Node newNode = new Node(e);
+        Node<E> newNode = new Node<>(e);
         if (tail == null) {
             tail = newNode;
         } else {
@@ -61,32 +61,32 @@ public class MyLinkedList<E> implements Cloneable {
     public E removeFirst() {
         if (numNodes == 0) return null;
         else {
-            Node temp = head;
+            Node<E> temp = head;
             head = head.next;
             numNodes--;
             if (head == null) tail = null;
-            return (E) temp.data;
+            return temp.data;
         }
     }
 
     public E removeLast() {
         if (numNodes == 0) return null;
         else if (numNodes == 1) {
-            Node temp = head;
+            Node<E> temp = head;
             head = tail = null;
             numNodes = 0;
-            return (E) temp.data;
+            return temp.data;
         } else {
-            Node current = head;
+            Node<E> current = head;
 
             for (int i = 0; i < numNodes - 2; i++)
                 current = current.next;
 
-            Node temp = tail;
+            Node<E> temp = tail;
             tail = current;
             tail.next = null;
             numNodes--;
-            return (E) temp.data;
+            return temp.data;
         }
     }
 
@@ -95,36 +95,47 @@ public class MyLinkedList<E> implements Cloneable {
         else if (index == 0) return removeFirst();
         else if (index == numNodes - 1) return removeLast();
         else {
-            Node previous = head;
+            Node<E> previous = head;
 
             for (int i = 1; i < index; i++) {
                 previous = previous.next;
             }
 
-            Node current = previous.next;
+            Node<E> current = previous.next;
             previous.next = current.next;
             numNodes--;
-            return (E) current.data;
+            return current.data;
         }
     }
 
-    public boolean remove(Node e) {
-        if (e == null) {
-            for (Node x = head; x != null; x = x.next) {
-                if (x.data == null) {
-                    remove(x);
-                    return true;
-                }
-            }
-        } else {
-            for (Node x = head; x != null; x = x.next) {
-                if (e.equals(x.data)) {
-                    remove(x);
-                    return true;
-                }
-            }
+    public boolean remove(E e) {
+        Node<E> prev = new Node<>(null);
+        prev.next = head;
+        Node<E> next = head.next;
+        Node<E> temp = head;
+        boolean exist = false;
+        if (head.data == e){
+            head = head.next;
+            exist = true;
         }
-        return false;
+        while (temp.next != null){
+            if(temp.data == e){
+                prev.next = next;
+                exist = true;
+                break;
+            }
+            prev = temp;
+            temp = temp.next;
+            next = temp.next;
+        }
+        if(!exist && temp.data == e){
+            prev.next = null;
+            exist = true;
+        }
+        if (exist){
+            numNodes--;
+        }
+        return exist;
     }
 
     public int size() {
@@ -136,7 +147,7 @@ public class MyLinkedList<E> implements Cloneable {
     }
 
     public boolean contains(Object o) {
-        for (Node x = head; x != null; x = x.next) {
+        for (Node<E> x = head; x != null; x = x.next) {
             if (o.equals(x.data)) {
                 return true;
             }
@@ -147,7 +158,7 @@ public class MyLinkedList<E> implements Cloneable {
 
     public int indexOf(E o) {
         int count = 0;
-        for (Node x = head; x != null; x = x.next) {
+        for (Node<E> x = head; x != null; x = x.next) {
             if (o.equals(x.data)) {
                 count++;
                 break;
@@ -163,29 +174,29 @@ public class MyLinkedList<E> implements Cloneable {
     }
 
     public E get(int i) {
-        Node temp = head;
+        Node<E> temp = head;
         for (int x = 0; x < numNodes; x++) {
             if(x == i){
                 break;
             }
             temp = temp.next;
         }
-        return (E) temp.data;
+        return temp.data;
     }
 
     public E getFirst() {
-        Node first = head;
-        return (E) first.data;
+        Node<E> first = head;
+        return first.data;
     }
 
     public E getLast() {
-        Node last = tail;
-        return (E) last.data;
+        Node<E> last = tail;
+        return last.data;
     }
 
     public void clear() {
-        for (Node x = head; x != null; ) {
-            Node next = x.next;
+        for (Node<E> x = head; x != null; ) {
+            Node<E> next = x.next;
             x.data = null;
             x.next = null;
             x = next;
